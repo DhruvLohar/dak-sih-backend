@@ -1,0 +1,527 @@
+openapi: 3.0.3
+info:
+  title: Dak Backend APIs
+  version: 0.0.0
+paths:
+  /philatelist/:
+    get:
+      operationId: philatelist_list
+      tags:
+      - philatelist
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Philatelist'
+          description: ''
+    post:
+      operationId: philatelist_create
+      tags:
+      - philatelist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+        required: true
+      security:
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Philatelist'
+          description: ''
+  /philatelist/{id}/:
+    get:
+      operationId: philatelist_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this philatelist.
+        required: true
+      tags:
+      - philatelist
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Philatelist'
+          description: ''
+    put:
+      operationId: philatelist_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this philatelist.
+        required: true
+      tags:
+      - philatelist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Philatelist'
+          description: ''
+    patch:
+      operationId: philatelist_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this philatelist.
+        required: true
+      tags:
+      - philatelist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPhilatelist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPhilatelist'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPhilatelist'
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Philatelist'
+          description: ''
+    delete:
+      operationId: philatelist_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this philatelist.
+        required: true
+      tags:
+      - philatelist
+      security:
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /philatelist/{id}/getOTPOnEmail/:
+    get:
+      operationId: philatelist_getOTPOnEmail_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this philatelist.
+        required: true
+      tags:
+      - philatelist
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Philatelist'
+          description: ''
+  /philatelist/{id}/verifyOTPOnEmail/:
+    post:
+      operationId: philatelist_verifyOTPOnEmail_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this philatelist.
+        required: true
+      tags:
+      - philatelist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Philatelist'
+          description: ''
+  /philatelist/signUpSignIn/:
+    post:
+      operationId: philatelist_signUpSignIn_create
+      tags:
+      - philatelist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Philatelist'
+          description: ''
+  /philatelist/updateFcmToken/:
+    put:
+      operationId: philatelist_updateFcmToken_update
+      tags:
+      - philatelist
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Philatelist'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Philatelist'
+          description: ''
+  /schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    BlankEnum:
+      enum:
+      - ''
+    GenderEnum:
+      enum:
+      - male
+      - female
+      - other
+      type: string
+      description: |-
+        * `male` - Male
+        * `female` - Female
+        * `other` - Other
+    NullEnum:
+      enum:
+      - null
+    PatchedPhilatelist:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        profile_img:
+          type: string
+          readOnly: true
+        password:
+          type: string
+          maxLength: 128
+        name:
+          type: string
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 15
+        gender:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        address:
+          type: string
+          nullable: true
+        postal_code:
+          type: string
+          nullable: true
+          maxLength: 20
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+    Philatelist:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        profile_img:
+          type: string
+          readOnly: true
+        password:
+          type: string
+          maxLength: 128
+        name:
+          type: string
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone_number:
+          type: string
+          nullable: true
+          maxLength: 15
+        gender:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        address:
+          type: string
+          nullable: true
+        postal_code:
+          type: string
+          nullable: true
+          maxLength: 20
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        modified_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - email
+      - id
+      - modified_at
+      - password
+      - profile_img
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

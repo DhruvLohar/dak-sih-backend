@@ -1,0 +1,11 @@
+Django
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+pillow
+six
+django-redis
+celery[redis]
+django-redis
+python-dotenv
+drf-spectacular
