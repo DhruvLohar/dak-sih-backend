@@ -1,5 +1,6 @@
 from rest_framework.decorators import action
-from dak_sih.responses import *
+from rest_framework.response import Response
+from rest_framework import status
 
 from .models import *
 from .serializers import *
@@ -12,9 +13,7 @@ class UserServicesMixin:
         announcements = Announcement.objects.all()
         serializer = AnnouncementSerializer(announcements, many=True)
         
-        return ResponseSuccess({
-            "all_annoucements": serializer.data
-        })
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['GET'])
     def allNotifications(self, request):
@@ -22,9 +21,7 @@ class UserServicesMixin:
         notifications = request.user.all_notifications.all()
         serializer = NotificationSerializer(notifications, many=True)
         
-        return ResponseSuccess({
-            "all_notifications": serializer.data
-        })
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['GET'])
     def allWorkshops(self, request):
@@ -32,9 +29,7 @@ class UserServicesMixin:
         workshops = Workshop.objects.filter(for_government=False)
         serializer = WorkshopSerializer(workshops, many=True)
         
-        return ResponseSuccess({
-            "all_workshops": serializer.data
-        })
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
         
     @action(detail=False, methods=['POST'])
     def workshopDetails(self, request):
@@ -44,9 +39,7 @@ class UserServicesMixin:
             workshops = Workshop.objects.filter(id=workshop_id, for_government=False)
             serializer = WorkshopSerializer(workshops, many=True)
             
-            return ResponseSuccess({
-                "all_workshops": serializer.data
-            })
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
         except Workshop.DoesNotExist:
-            return ResponseError(message="Workshop not found")
+            return Response(data="Workshop", status=status.HTTP_404_NOT_FOUND)
     

@@ -1,5 +1,12 @@
 from django.db import models
 
+class ForumPostImage(models.Model):
+    post = models.ForeignKey("forum.ForumPost", related_name="post_images", on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="forum/")
+
+    def __str__(self) -> str:
+        return self.post.title
+
 class ForumPost(models.Model):
     user = models.ForeignKey(
         "philatelist.Philatelist", 
@@ -16,7 +23,7 @@ class ForumPost(models.Model):
     likes_count = models.PositiveIntegerField(default=0)
     
     def __str__(self):
-        return f"Post by {self.user.username} at {self.created_at}"
+        return f"Post by {self.user.name} at {self.created_at}"
 
 
 class ForumPostReply(models.Model):
@@ -36,4 +43,4 @@ class ForumPostReply(models.Model):
     is_active = models.BooleanField(default=True)
     
     def __str__(self):
-        return f"Reply by {self.user.username} on {self.post.title}"
+        return f"Reply by {self.user.name} on {self.post.title}"

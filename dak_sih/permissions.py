@@ -28,7 +28,7 @@ class CookieAuthentication(JWTAuthentication):
             # Retrieve the user based on the token's user_id
             user = Philatelist.objects.get(id=validated_token[settings.SIMPLE_JWT.get('USER_ID_CLAIM')])
             
-            request.user_type = self.get_user_type(user)
+            # request.user_type = self.get_user_type(user)
 
             # Return a tuple of (user, validated_token) to indicate a successful authentication
             return (user, validated_token)

@@ -1,16 +1,18 @@
 from random import randint
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import viewsets, status
 from django.utils import timezone
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from django.db import transaction
 from django.db.utils import IntegrityError
 from django.core.mail import EmailMultiAlternatives
 from django.utils import html
 from django.template.loader import render_to_string
+from rest_framework.permissions import IsAuthenticated
 
 from dak_sih import settings
 from dak_sih.permissions import CookieAuthentication
-from dak_sih.responses import *
+from dak_sih.responses import EnhancedResponseMixin
 
 from philatelist.models import Philatelist
 from philatelist.serializers import *
@@ -32,7 +34,7 @@ class AuthMixin:
             print(e)
             return False
     
-    @action(detail=True, methods=['GET'], authentication_classes=[])
+    @action(detail=True, methods=['POST'], permission_classes=[])
     def getOTPOnEmail(self, request, pk=None):
         user = self.get_object()
         
@@ -51,10 +53,13 @@ class AuthMixin:
         if email_sent:
             user.valid_otp = generated_otp
             user.save()
-            return ResponseSuccess(message="Email was sent on the specified email")
-        return ResponseError(message="Something went wrong sending the email")
+            return Response(
+                data="Email was sent on the specified email",
+                status=status.HTTP_200_OK
+            )
+        return Response(data={"detail": "Something went wrong sending the email"}, status=status.HTTP_417_EXPECTATION_FAILED)
     
-    @action(detail=True, methods=['POST'], authentication_classes=[])
+    @action(detail=True, methods=['POST'], permission_classes=[])
     def verifyOTPOnEmail(self, request, pk=None):
         user = self.get_object()
         entered_otp = request.data.get("otp")
@@ -68,30 +73,28 @@ class AuthMixin:
             user.last_login = timezone.now()
             user.save()
             
-            return ResponseSuccess(response={
+            return Response(data={
                 "verified": True,
-                "user": {
-                    "id": user.id,
-                    "email": user.email,
-                    "phone_number": user.phone_number,
-                    "name": user.name,
-                    "profile_img": request.build_absolute_uri(user.profile_img.url) if user.profile_img and request else None,
-                    "access_token": user.access_token
-                }
-            }, message="User Login Successful")
-        return ResponseError(message="Invalid OTP. Please try again")
+                "id": user.id,
+                "email": user.email,
+                "phone_number": user.phone_number,
+                "name": user.name,
+                "profile_img": request.build_absolute_uri(user.profile_img.url) if user.profile_img and request else None,
+                "access_token": user.access_token
+            }, status=status.HTTP_200_OK)
+        return Response(data={"detail": "Invalid OTP. Please try again"}, status=status.HTTP_400_BAD_REQUEST)
     
-    @action(detail=False, methods=['POST'], authentication_classes=[])
+    @action(detail=False, methods=['POST'], permission_classes=[])
     def signUpSignIn(self, request):
         email = request.data.get("email")
         
         try:
             user = Philatelist.objects.get(email=email)
             
-            return ResponseSuccess(response={
-                "verified": user.is_active,
+            return Response(data={
                 "id": user.id,
-            }, message="User Login Successful")
+                "verified": user.is_active,
+            }, status=status.HTTP_200_OK)
         except Philatelist.DoesNotExist:
             try:
                 with transaction.atomic():
@@ -104,55 +107,53 @@ class AuthMixin:
                         user.is_active = False
                         user.save()
                     
-                        return ResponseSuccess(response={
+                        return Response(data={
+                            "id": user.id,
                             "verified": False,
-                            "user": {
-                                "id": user.id
-                            }
-                        }, message="User logged in successfully")
+                        }, status=status.HTTP_200_OK)
                     
                     if serializer.errors.get("email"):
-                        return ResponseError(message="User with the same 'email' already exists")    
+                        return Response(
+                            data={"detail": "User with the same 'email' already exists"},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )    
                     
-                    return ResponseSuccess({
-                            "error": serializer.errors
-                        },
-                        message="Something went wrong while creating an user"
+                    return Response(
+                        {"detail": str(serializer.error_messages)},
+                        status=status.HTTP_400_BAD_REQUEST
                     )
                     
             except IntegrityError:
-                return ResponseError(message="User with the same 'email' already exists")
+                return Response(
+                    data={"detail": "User with the same 'email' already exists"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )  
             except UnicodeDecodeError as e:
-                return ResponseError(message="UnicodeDecodeError occurred: " + str(e))
+                return Response(
+                    data={"detail": str(e)},
+                    status=status.HTTP_400_BAD_REQUEST
+                )  
             except Exception as e:
-                return ResponseError(message="An unexpected error occurred: " + str(e))
-            
+                return Response(
+                    data={"detail": str(e)},
+                    status=status.HTTP_400_BAD_REQUEST
+                )  
+                
             
 class PhilatelistAPIView(
-    ModelViewSet,
     AuthMixin,
     UserServicesMixin,
+    viewsets.ModelViewSet,
+    EnhancedResponseMixin
 ):
     queryset = Philatelist.objects.all()
     serializer_class = PhilatelistSerializer
-    authentication_classes = [CookieAuthentication]
-    
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        
-        return ResponseSuccess({
-            "profile": serializer.data
-        })
-    
-    def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+    permission_classes = [IsAuthenticated] # kon aa sakta hai
+    authentication_classes = [CookieAuthentication] # jo aara woh kon hai
 
     def perform_destroy(self, instance):
         instance.is_active = False
         instance.save()
-        
-        return super().perform_destroy(instance)
 
     @action(detail=False, methods=['PUT'])
     def updateFcmToken(self, request):
@@ -161,5 +162,5 @@ class PhilatelistAPIView(
         request.user.fcm_token = fcm_token
         request.user.save()
         
-        return ResponseSuccess({}, message="Token updated successfully")
+        return Response(message="Token updated successfully")
     

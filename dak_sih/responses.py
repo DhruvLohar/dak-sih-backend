@@ -1,46 +1,35 @@
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ViewSet
 
-from dak_sih.responses import *
-
-class CustomModelViewSet(ModelViewSet):
+class EnhancedResponseMixin(ViewSet):
     def finalize_response(self, request, response, *args, **kwargs):
-        """
-        Wrap all responses in the standardized format using ResponseSuccess.
-        """
+        response = super().finalize_response(request, response, *args, **kwargs)
         
-        # Only wrap successful responses (2xx status codes)
-        if 200 <= response.status_code < 300:
-            return ResponseSuccess(response=response.data, message="Request successful")
-            # return Response(data=response_data, status=response.status_code)
-        return super().finalize_response(request, response, *args, **kwargs)
+        status_code = response.status_code
+        
+        if 200 <= response.status_code <= 299:
+            data = dict(success=True, data=response.data)
+            status_code = 200
+            
+        elif 400 <= response.status_code <= 499:
+            if response.status_code == 403:
+                message = "You are not authorized to perform this request" 
+            elif response.status_code == 404 and isinstance(response.data, str):
+                message = f"No matching {response.data} was found"
+            elif not response.data.get("detail"):
+                message = "; ".join([
+                    f"{field}: {', '.join(errors)}"
+                    for field, errors in response.data.items()
+                    if field != "non_field_errors"
+                ])
+            else:
+                message = str(response.data.get("detail"))
+                
+            print(message)
+            
+            data = dict(success=False, message=message)
+            status_code = 200
 
-def ModelDoesNotExists(model, param="required"):
-    return Response(data=dict(
-        success=False,
-        message="{} does not exists. Please make sure your provide '{}' in request body.".format(model, param)
-    ), status=status.HTTP_200_OK)
-    
-def ResponseSuccess(response={}, message="success"):
-    data = dict(
-        success=True,
-        message=message,
-    )
-    data.update(response)
-    
-    return Response(data=data, status=status.HTTP_200_OK)
-
-def ResponseError(message="success"):
-    data = dict(
-        success=False,
-        message=message,
-    )
-    
-    return Response(data=data, status=status.HTTP_200_OK)
-
-def NotAuthorized():
-    return Response(data=dict(
-        success=False,
-        message="You are not authorized to make this request."
-    ), status=status.HTTP_403_FORBIDDEN)
+        response.data = data
+        response.status_code = status_code
+        
+        return response

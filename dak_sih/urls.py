@@ -19,11 +19,13 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from philatelist.urls import router as pr
+from forum.urls import router as fr
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('schema/', SpectacularAPIView.as_view(), name="schema"),
     path('schema/docs/', SpectacularSwaggerView.as_view(url_name="schema")),
     
-    path('philatelist/', include(pr.urls))
+    path('philatelist/', include(pr.urls)),
+    path('forum/', include(fr.urls)),
 ]
