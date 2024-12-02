@@ -23,8 +23,6 @@ class EnhancedResponseMixin(ViewSet):
                 ])
             else:
                 message = str(response.data.get("detail"))
-                
-            print(message)
             
             data = dict(success=False, message=message)
             status_code = 200
