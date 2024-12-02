@@ -8,7 +8,7 @@ class PhilatelistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Philatelist
         exclude = (
-            'access_token', 'valid_otp', 'is_active',
+            'access_token', 'valid_otp', 'is_active', 'password'
         )
         
     def get_profile_img(self, instance):
