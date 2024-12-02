@@ -19,3 +19,25 @@ db.sqlite3
 ./db.sqlite3
 
 dump.rdb
+
+# Ignore __pycache__ and migrations for all apps
+dak_exchange/__pycache__/
+dak_exchange/migrations/
+
+dak_sih/__pycache__/
+dak_sih/migrations/
+
+dashboard/__pycache__/
+dashboard/migrations/
+
+forum/__pycache__/
+forum/migrations/
+
+philatelist/__pycache__/
+philatelist/migrations/
+
+services/__pycache__/
+services/migrations/
+
+store/__pycache__/
+store/migrations/

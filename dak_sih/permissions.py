@@ -2,6 +2,7 @@ from rest_framework import permissions
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.authentication import get_authorization_header
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.contrib.auth.models import AnonymousUser
 
 from dak_sih import settings
 from philatelist.models import Philatelist

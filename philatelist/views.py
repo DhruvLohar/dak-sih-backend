@@ -34,55 +34,65 @@ class AuthMixin:
             print(e)
             return False
     
-    @action(detail=True, methods=['POST'], permission_classes=[])
+    @action(detail=False, methods=['POST'], permission_classes=[])
     def getOTPOnEmail(self, request, pk=None):
-        user = self.get_object()
+        uid = request.data.get("uid")
         
-        generated_otp = randint(1000, 9999)
-        email_sent = self.send_otp_on_email(
-            "Dak | OTP Authentication",
-            "otp_email_template.html",
-            user.email,
-            context={
-                "date": timezone.now().strftime("%d %B, %Y"),
-                "username": user.name,
-                "generated_otp": generated_otp
-            }
-        )
-        
-        if email_sent:
-            user.valid_otp = generated_otp
-            user.save()
-            return Response(
-                data="Email was sent on the specified email",
-                status=status.HTTP_200_OK
+        try:
+            user = Philatelist.objects.get(id=uid)
+            
+            generated_otp = randint(10000, 99999)
+            email_sent = self.send_otp_on_email(
+                "Dak | OTP Authentication",
+                "otp_email_template.html",
+                user.email,
+                context={
+                    "date": timezone.now().strftime("%d %B, %Y"),
+                    "username": user.name,
+                    "generated_otp": generated_otp
+                }
             )
-        return Response(data={"detail": "Something went wrong sending the email"}, status=status.HTTP_417_EXPECTATION_FAILED)
+            
+            if email_sent:
+                user.valid_otp = generated_otp
+                user.save()
+                return Response(
+                    data="Email was sent on the specified email",
+                    status=status.HTTP_200_OK
+                )
+            return Response(data={"detail": "Something went wrong sending the email"}, status=status.HTTP_417_EXPECTATION_FAILED)
+        except Philatelist.DoesNotExist:
+            return Response(data="Philatelist", status=status.HTTP_404_NOT_FOUND)
     
-    @action(detail=True, methods=['POST'], permission_classes=[])
+    @action(detail=False, methods=['POST'], permission_classes=[])
     def verifyOTPOnEmail(self, request, pk=None):
-        user = self.get_object()
+        uid = request.data.get("uid")
         entered_otp = request.data.get("otp")
         
-        if user.valid_otp == entered_otp:
-            accessToken, changeUserToken = user.generateToken()
-            if changeUserToken:
-                user.access_token = accessToken
-
-            user.is_active = True
-            user.last_login = timezone.now()
-            user.save()
+        try:
+            user = Philatelist.objects.get(id=uid)
             
-            return Response(data={
-                "verified": True,
-                "id": user.id,
-                "email": user.email,
-                "phone_number": user.phone_number,
-                "name": user.name,
-                "profile_img": request.build_absolute_uri(user.profile_img.url) if user.profile_img and request else None,
-                "access_token": user.access_token
-            }, status=status.HTTP_200_OK)
-        return Response(data={"detail": "Invalid OTP. Please try again"}, status=status.HTTP_400_BAD_REQUEST)
+            if user.valid_otp == int(entered_otp):
+                accessToken, changeUserToken = user.generateToken()
+                if changeUserToken:
+                    user.access_token = accessToken
+
+                user.is_active = True
+                user.last_login = timezone.now()
+                user.save()
+                
+                return Response(data={
+                    "verified": True,
+                    "id": user.id,
+                    "email": user.email,
+                    "phone_number": user.phone_number,
+                    "name": user.name,
+                    "profile_img": request.build_absolute_uri(user.profile_img.url) if user.profile_img and request else None,
+                    "access_token": user.access_token
+                }, status=status.HTTP_200_OK)
+            return Response(data={"detail": "Invalid OTP. Please try again"}, status=status.HTTP_400_BAD_REQUEST)
+        except Philatelist.DoesNotExist:
+            return Response(data="Philatelist", status=status.HTTP_404_NOT_FOUND)
     
     @action(detail=False, methods=['POST'], permission_classes=[])
     def signUpSignIn(self, request):
