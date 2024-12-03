@@ -49,3 +49,20 @@ class Announcement(models.Model):
     
     def __str__(self) -> str:
         return self.title
+    
+    
+class Catalog(models.Model):
+    title = models.CharField(max_length=250)
+    description = models.TextField()
+    image = models.ImageField(upload_to="catalog/")
+    
+    coining_date = models.DateField()
+    backstory = models.TextField()
+    quantity_produced = models.PositiveIntegerField()
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self) -> str:
+        return self.title
+

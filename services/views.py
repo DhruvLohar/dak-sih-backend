@@ -42,4 +42,24 @@ class UserServicesMixin:
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         except Workshop.DoesNotExist:
             return Response(data="Workshop", status=status.HTTP_404_NOT_FOUND)
+        
+    @action(detail=False, methods=['GET'])
+    def allCatalog(self, request):
+        
+        catalog = Catalog.objects.all()
+        serializer = CatalogSerializer(catalog, many=True)
+        
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
     
+    @action(detail=False, methods=['POST'])
+    def catalogDetails(self, request):
+        
+        catalog_id = request.data.get("catalog_id")
+        
+        try:
+            catalog = Catalog.objects.get(id=catalog_id)
+            serializer = CatalogSerializer(catalog)
+            
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        except Catalog.DoesNotExist:
+            return Response(data="Catalog", status=status.HTTP_404_NOT_FOUND)

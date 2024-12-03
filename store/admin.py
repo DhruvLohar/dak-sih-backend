@@ -19,7 +19,7 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('title', 'description', 'price', 'quantity', 'quantity_sold', 'is_active')
         }),
         ('Relations and Metadata', {
-            'fields': ('collection', 'current_state'),
+            'fields': ('collection',),
         }),
     )
 

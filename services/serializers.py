@@ -12,9 +12,17 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = '__all__'
+
         
 class AnnouncementSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Announcement
+        fields = '__all__'
+
+
+class CatalogSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Catalog
         fields = '__all__'

@@ -20,7 +20,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from philatelist.urls import router as pr
 from forum.urls import router as fr
-
+from store.urls import product_router, collection_router, order_router
+from dak_exchange.urls import router as exchange_router
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('schema/', SpectacularAPIView.as_view(), name="schema"),
@@ -28,4 +29,10 @@ urlpatterns = [
     
     path('philatelist/', include(pr.urls)),
     path('forum/', include(fr.urls)),
+    
+    path('product/', include(product_router.urls)),
+    path('collection/', include(collection_router.urls)),
+    path('order/', include(order_router.urls)),
+    
+    path('exchange/', include(exchange_router.urls)),
 ]

@@ -15,12 +15,14 @@ class EnhancedResponseMixin(ViewSet):
                 message = "You are not authorized to perform this request" 
             elif response.status_code == 404 and isinstance(response.data, str):
                 message = f"No matching {response.data} was found"
-            elif not response.data.get("detail"):
+            elif not isinstance(response.data, list) and not response.data.get("detail"):
                 message = "; ".join([
                     f"{field}: {', '.join(errors)}"
                     for field, errors in response.data.items()
                     if field != "non_field_errors"
                 ])
+            elif isinstance(response.data, list):
+                message = "; ".join(response.data)
             else:
                 message = str(response.data.get("detail"))
             

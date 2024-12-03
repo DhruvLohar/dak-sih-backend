@@ -35,3 +35,22 @@ class WorkshopAdmin(admin.ModelAdmin):
             "classes": ("collapse",),  # Collapsible section for timestamps
         }),
     )
+
+@admin.register(Catalog)
+class CatalogAdmin(admin.ModelAdmin):
+    list_display = ('title', 'coining_date', 'quantity_produced', 'created_at')
+    
+    fieldsets = (
+        ("Basic Information", {
+            "fields": ("title", "description", "image"),
+        }),
+        ("Details", {
+            "fields": ("coining_date", "backstory", "quantity_produced"),
+        }),
+        ("Timestamps", {
+            "fields": ("created_at", "modified_at"),
+            "classes": ("collapse",),
+        }),
+    )  
+    
+    readonly_fields = ('created_at', 'modified_at')

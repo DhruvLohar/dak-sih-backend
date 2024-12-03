@@ -13,7 +13,6 @@ class Collection(models.Model):
 class Product(models.Model):
     title = models.SlugField(unique=True, max_length=255)
     description = models.TextField(blank=True, null=True)
-    current_state = models.JSONField(blank=True, null=True)
     
     collection = models.ForeignKey("store.Collection", on_delete=models.SET_NULL, related_name="products", null=True, blank=True)
     

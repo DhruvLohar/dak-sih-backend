@@ -1,3 +1,5 @@
+from datetime import timedelta
+from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -8,7 +10,10 @@ from .serializers import *
 from dak_sih.permissions import CookieAuthentication
 from dak_sih.responses import *
 
-class ProductViewSet(viewsets.ViewSet):
+class ProductViewSet(
+    viewsets.ModelViewSet,
+    EnhancedResponseMixin
+):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     authentication_classes = [CookieAuthentication]
@@ -17,48 +22,50 @@ class ProductViewSet(viewsets.ViewSet):
         products = Product.objects.filter(is_active=True)  # Only fetch active products
         serializer = ProductSerializer(products, many=True)
         
-        return ResponseSuccess({
-            "products": serializer.data
-        })
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
         product = self.get_object()
         serializer = ProductSerializer(product)
         
-        return ResponseSuccess({
-            "product": serializer.data
-        })
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["post"])
     def addReview(self, request, pk=None):
         product = self.get_object()
+        
         if not Order.objects.filter(user=request.user, order_lines__product=product).exists():
-            return ResponseError(message="You must purchase the product before reviewing")
+            return Response(data={"detail": "You must purchase the product before reviewing"}, status=status.HTTP_400_BAD_REQUEST)
         
         serializer = UserReviewSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user, product=product)
-            return ResponseSuccess(response={"review": serializer.data}, message="Review added successfully")
-        return ResponseError(message=serializer.errors)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["delete"])
     def deleteReview(self, request, pk=None):
         product = self.get_object()
         review = UserReview.objects.filter(user=request.user, product=product).first()
+        
         if not review:
-            return ResponseError(message="Review not found")
+            return Response(data="Review", status=status.HTTP_404_NOT_FOUND)
         review.delete()
-        return ResponseSuccess(message="Review deleted successfully")
+        
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=["get"])
     def getReviews(self, request, pk=None):
         product = self.get_object()
         reviews = UserReview.objects.filter(product=product)
         serializer = UserReviewSerializer(reviews, many=True)
-        return ResponseSuccess(response={"reviews": serializer.data}, message="Reviews fetched successfully")
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CollectionViewSet(viewsets.ModelViewSet):
+class CollectionViewSet(
+    viewsets.ModelViewSet,
+    EnhancedResponseMixin
+):
     queryset = Collection.objects.all()
     serializer_class = CollectionSerializer
     authentication_classes = [CookieAuthentication]
@@ -67,26 +74,25 @@ class CollectionViewSet(viewsets.ModelViewSet):
         products = Product.objects.filter(is_active=True)  # Only fetch active products
         serializer = ProductSerializer(products, many=True)
         
-        return ResponseSuccess({
-            "products": serializer.data
-        })
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
         product = self.get_object()
         serializer = ProductSerializer(product)
         
-        return ResponseSuccess({
-            "product": serializer.data
-        })
+        return Response(serializer.data, qstatus=status.HTTP_200_OK)
 
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(
+    viewsets.ModelViewSet,
+    EnhancedResponseMixin
+):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     authentication_classes = [CookieAuthentication]
     
     def destroy(self, request, *args, **kwargs):
-        return ResponseSuccess(message="Order cant be deleted")
+        return Response(data={"detail": "Order cant be deleted"}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=["post"])
     def placeOrder(self, request):
@@ -96,11 +102,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer = OrderSerializer(data=data)
         if serializer.is_valid():
             order = serializer.save()  # Save the order and handle line items in the serializer
-            return ResponseSuccess({
-                "order": serializer.data,
-            })
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return ResponseError(message=f"{serializer.error_messages}")
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=["patch"])
     def updateStatus(self, request, pk=None):
@@ -108,8 +112,12 @@ class OrderViewSet(viewsets.ModelViewSet):
         status = request.data.get("status")
         
         if status not in [choice[0] for choice in Order.STATUS_CHOICES]:
-            return ResponseError(message="Invalid status")
+            return Response(data={"detail": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if status == "cancelled":
+            if order.created_at + timedelta(hours=8) < timezone.now():
+                return Response(data={"detail": "Order cannot be cancelled after 8 hours"}, status=status.HTTP_400_BAD_REQUEST)
         
         order.status = status
         order.save()
-        return ResponseSuccess(message=f"Order status updated to {status}")
+        return Response(status=status.HTTP_200_OK)
