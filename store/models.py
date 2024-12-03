@@ -23,6 +23,8 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    created_by = models.ForeignKey("dashboard.AdminUser", on_delete=models.SET_NULL, related_name="created_products", null=True, blank=True)
 
     def __str__(self):
         return self.title

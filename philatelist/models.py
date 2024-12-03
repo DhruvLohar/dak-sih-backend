@@ -47,8 +47,6 @@ class Philatelist(AbstractBaseUser, models.Model):
     valid_otp = models.PositiveIntegerField(null=True, blank=True)
     # fcm_token = models.TextField(null=True, blank=True)
     
-    wallet_balance = models.PositiveIntegerField(default=0)
-    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'phone_number']
     
@@ -69,8 +67,3 @@ class Philatelist(AbstractBaseUser, models.Model):
 
         new_token = AccessToken.for_user(self)
         return str(new_token), True
-
-    def add_to_wallet(self, amount):
-        with transaction.atomic():
-            self.wallet_balance += amount
-            self.save()

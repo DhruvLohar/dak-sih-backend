@@ -164,6 +164,11 @@ class PhilatelistAPIView(
     def perform_destroy(self, instance):
         instance.is_active = False
         instance.save()
+        
+    @action(detail=False, methods=['GET'])
+    def getProfile(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['PUT'])
     def updateFcmToken(self, request):
