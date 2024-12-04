@@ -24,6 +24,9 @@ from store.urls import product_router, collection_router, order_router
 from dak_exchange.urls import router as exchange_router
 from dashboard.urls import router as dashboard_router
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('schema/', SpectacularAPIView.as_view(), name="schema"),
@@ -39,3 +42,6 @@ urlpatterns = [
     path('exchange/', include(exchange_router.urls)),
     path('dashboard/', include(dashboard_router.urls)),
 ]
+
+# TODO: add urls for media files
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)    

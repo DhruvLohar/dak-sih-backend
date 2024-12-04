@@ -87,7 +87,7 @@ class AuthMixin:
                     "email": user.email,
                     "phone_number": user.phone_number,
                     "name": user.name,
-                    "profile_img": request.build_absolute_uri(user.profile_img.url) if user.profile_img and request else None,
+                    "profile_img": user.profile_img,
                     "access_token": user.access_token
                 }, status=status.HTTP_200_OK)
             return Response(data={"detail": "Invalid OTP. Please try again"}, status=status.HTTP_400_BAD_REQUEST)

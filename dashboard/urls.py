@@ -1,9 +1,5 @@
 from rest_framework import routers
-from .views import PostalOfficeViewSet, AdminUserViewSet
+from .views import *
 
 router = routers.DefaultRouter()
-router.register(r'postal-offices', PostalOfficeViewSet)
-router.register(r'admin-users', AdminUserViewSet)
-
-urlpatterns = router.urls
-
+router.register(r'', AdminUserViewSet)
