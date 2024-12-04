@@ -2,4 +2,4 @@ from rest_framework import routers
 from .views import *
 
 router = routers.DefaultRouter()
-router.register(r'', AdminUserViewSet)
+router.register(r'admin-user', AdminUserViewSet)

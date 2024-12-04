@@ -28,6 +28,8 @@ class PDA(models.Model):
         ('Dealer', 'Stamp Dealer / Shop'),
         ('Company', 'Company'),
     ]
+    
+    philatelist = models.ForeignKey("philatelist.Philatelist", related_name="pda_applications", on_delete=models.CASCADE)
     customer_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     name_of_applicant = models.CharField(max_length=100)
     mailing_address = models.TextField()
@@ -71,7 +73,17 @@ class PDA(models.Model):
     
     # For Office Use
     date_of_application = models.DateField(auto_now_add=True)
-    signature_of_applicant = models.ImageField(upload_to='signatures/')
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+    status = models.CharField(max_length=20, default="Pending", choices=STATUS_CHOICES)
+    rejection_reason = models.TextField(blank=True, null=True)
     
+    # Documents
+    signature_of_applicant = models.ImageField(upload_to='signatures/', blank=True, null=True)
+    aadhar_card = models.FileField(upload_to='aadhar_cards/', blank=True, null=True)
+
     def __str__(self):
         return f"{self.name_of_applicant} - {self.date_of_application}"

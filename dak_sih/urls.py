@@ -41,9 +41,9 @@ urlpatterns = [
     path('order/', include(order_router.urls)),
     
     path('exchange/', include(exchange_router.urls)),
-    path('dashboard/', include(dashboard_router.urls)),
-    
     path('services/', include(services_router.urls)),
+    
+    path('dashboard/', include(dashboard_router.urls)),
 ]
 
 # TODO: add urls for media files

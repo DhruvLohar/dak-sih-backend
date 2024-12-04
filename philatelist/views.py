@@ -89,7 +89,7 @@ class AuthMixin:
                     "email": user.email,
                     "phone_number": user.phone_number,
                     "name": user.name,
-                    "profile_img": user.profile_img,
+                    "profile_img": user.profile_img.url if user.profile_img else None,
                     "access_token": user.access_token
                 }, status=status.HTTP_200_OK)
             return Response(data={"detail": "Invalid OTP. Please try again"}, status=status.HTTP_400_BAD_REQUEST)
@@ -179,7 +179,7 @@ class PhilatelistAPIView(
     
     @action(detail=False, methods=['POST'])
     def createPDAProfile(self, request):
-        serializer = PDAUserSerializer(data=request.data)
+        serializer = PDAUserSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         

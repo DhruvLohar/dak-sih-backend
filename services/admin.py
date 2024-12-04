@@ -10,14 +10,14 @@ class BlogAdmin(admin.ModelAdmin):
     readonly_fields = ['published_date']
     
     fieldsets = (
+        ('Image', {
+            'fields': ('image',)
+        }),
         ('General Information', {
             'fields': ('slug', 'title', 'description', 'published_date', 'read_time')
         }),
         ('Content', {
             'fields': ('content',)
-        }),
-        ('Image', {
-            'fields': ('image',)
         }),
     )
 

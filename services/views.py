@@ -58,6 +58,3 @@ class BlogViewSet(ModelViewSet, EnhancedResponseMixin):
     permission_classes = [IsAuthenticated]
     authentication_classes = [CookieAuthentication]
 
-
-    def get_queryset(self):
-        return Blog.objects.all().order_by('-created_at')
