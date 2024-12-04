@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from .models import PostalOffice, AdminUser
+from .models import *
 
 class PostalOfficeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,5 +10,10 @@ class PostalOfficeSerializer(serializers.ModelSerializer):
 class AdminUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminUser
+        fields = '__all__'
+
+class PDAUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PDA
         fields = '__all__'
 

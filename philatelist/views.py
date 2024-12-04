@@ -17,6 +17,8 @@ from dak_sih.responses import EnhancedResponseMixin
 from philatelist.models import Philatelist
 from philatelist.serializers import *
 
+from dashboard.serializers import PDAUserSerializer
+
 from services.views import UserServicesMixin
 
 class AuthMixin:
@@ -170,12 +172,16 @@ class PhilatelistAPIView(
         serializer = self.get_serializer(request.user)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['PUT'])
-    def updateFcmToken(self, request):
-        fcm_token = request.data.get("fcm_token")
+    @action(detail=False, methods=['GET'])
+    def getPDAProfile(self, request):
+        serializer = PDAUserSerializer(request.user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['POST'])
+    def createPDAProfile(self, request):
+        serializer = PDAUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         
-        request.user.fcm_token = fcm_token
-        request.user.save()
-        
-        return Response(message="Token updated successfully")
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
     

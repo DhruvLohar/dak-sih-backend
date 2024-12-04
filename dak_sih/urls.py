@@ -23,6 +23,7 @@ from forum.urls import router as fr
 from store.urls import product_router, collection_router, order_router
 from dak_exchange.urls import router as exchange_router
 from dashboard.urls import router as dashboard_router
+from services.urls import router as services_router
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -41,7 +42,9 @@ urlpatterns = [
     
     path('exchange/', include(exchange_router.urls)),
     path('dashboard/', include(dashboard_router.urls)),
+    
+    path('services/', include(services_router.urls)),
 ]
 
 # TODO: add urls for media files
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)    
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

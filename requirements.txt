@@ -9,3 +9,4 @@ celery[redis]
 django-redis
 python-dotenv
 drf-spectacular
+django-tinymce

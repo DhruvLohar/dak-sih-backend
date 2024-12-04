@@ -1,10 +1,16 @@
 from rest_framework import serializers
 from .models import *
 
-class WorkshopSerializer(serializers.ModelSerializer):
+class BlogSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Workshop
+        model = Blog
         fields = '__all__'
+        
+    def create(self, validated_data):
+        
+        validated_data['user'] = self.context['request'].user
+        
+        return super().create(validated_data)
 
 
 class NotificationSerializer(serializers.ModelSerializer):

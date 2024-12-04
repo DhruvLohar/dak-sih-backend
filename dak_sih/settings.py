@@ -109,7 +109,9 @@ INSTALLED_APPS = [
     'services.apps.ServicesConfig',
     'store.apps.StoreConfig',
     'dashboard.apps.DashboardConfig',
-    'dak_exchange.apps.DakExchangeConfig'
+    'dak_exchange.apps.DakExchangeConfig',
+    
+    'tinymce'
 ]
 
 MIDDLEWARE = [

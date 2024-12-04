@@ -1,29 +1,25 @@
 from django.db import models
+from tinymce.models import HTMLField
 
-class Workshop(models.Model):
-    
-    banner = models.ImageField(upload_to="workshops/")
-    
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    duration = models.PositiveIntegerField() # in minutes
-    for_government = models.BooleanField(default=False)
+class Blog(models.Model):
+        
+    slug = models.SlugField(default="", max_length=200)
+    image = models.ImageField(upload_to="blogs/", null=True, blank=True)
 
-    address = models.TextField()
-    date = models.DateTimeField()
+    title = models.CharField(max_length=200, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    published_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    read_time = models.PositiveIntegerField(default=0)
+
+    content = HTMLField(null=True, blank=True)
     
-    tags = models.JSONField(default=list)
+    user = models.ForeignKey("philatelist.Philatelist", related_name='blogs', on_delete=models.PROTECT)
     
-    price = models.PositiveIntegerField()
-    # created_by ( admin user )
-    
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
-    is_active = models.BooleanField(default=True)
-    
+    class Meta:
+        ordering = ['-published_date']  
+
     def __str__(self) -> str:
-        return self.title
-
+        return self.slug
 
 class Notification(models.Model):
 
