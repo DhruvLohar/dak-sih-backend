@@ -10,8 +10,8 @@ class BlogAdmin(admin.ModelAdmin):
     readonly_fields = ['published_date']
     
     fieldsets = (
-        ('Image', {
-            'fields': ('image',)
+        ('Metadata', {
+            'fields': ('user', 'image')
         }),
         ('General Information', {
             'fields': ('slug', 'title', 'description', 'published_date', 'read_time')
