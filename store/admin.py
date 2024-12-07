@@ -5,18 +5,23 @@ from .models import *
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ('title', 'created_at', 'updated_at')
     search_fields = ('title', 'description')
-    prepopulated_fields = {'title': ('title',)}
+    prepopulated_fields = {'slug': ('title',)}
 
+
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('title', 'price', 'quantity', 'quantity_sold', 'is_active', 'created_at', 'updated_at')
     list_filter = ('is_active', 'collection')
     search_fields = ('title', 'description')
-    prepopulated_fields = {'title': ('title',)}
+    prepopulated_fields = {'slug': ('title',)}
+    inlines = [ProductImageInline]
     fieldsets = (
         ('Basic Information', {
-            'fields': ('title', 'description', 'price', 'quantity', 'quantity_sold', 'is_active')
+            'fields': ('slug', 'title', 'description', 'price', 'quantity', 'quantity_sold', 'is_active')
         }),
         ('Relations and Metadata', {
             'fields': ('collection', 'created_by'),

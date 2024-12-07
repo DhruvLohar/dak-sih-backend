@@ -76,11 +76,20 @@ class CollectionViewSet(
         
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # TODO: Add retrieve method to get a single collection by slug
     def retrieve(self, request, pk=None):
-        product = self.get_object()
-        serializer = ProductSerializer(product)
+        print(pk)
+        try:
+            collection = Collection.objects.get(slug=pk)
+        except Collection.DoesNotExist:
+            return Response(data="Collection", status=status.HTTP_404_NOT_FOUND)
         
-        return Response(serializer.data, qstatus=status.HTTP_200_OK)
+        serializer = CollectionSerializer(collection)
+        
+        products = collection.products.filter(is_active=True)
+        product_serializer = ProductSerializer(products, many=True)
+        
+        return Response(data={"collection": serializer.data, "products": product_serializer.data}, status=status.HTTP_200_OK)
 
 
 class OrderViewSet(

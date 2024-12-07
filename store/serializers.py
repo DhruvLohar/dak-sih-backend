@@ -8,9 +8,17 @@ class CollectionSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    
+    images = serializers.SerializerMethodField()
+    
     class Meta:
         model = Product
         fields = '__all__'
+        
+    def get_images(self, obj):
+        if obj.product_images:
+            return [image.image.url for image in obj.product_images.all()]
+        return []
         
     def create(self, validated_data):
         

@@ -1,7 +1,8 @@
 from django.db import models
 
 class Collection(models.Model):
-    title = models.SlugField(unique=True, max_length=255)
+    slug = models.SlugField(unique=True, max_length=255)
+    title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
@@ -10,8 +11,13 @@ class Collection(models.Model):
     def __str__(self):
         return self.title
 
+class ProductImage(models.Model):
+    product = models.ForeignKey("store.Product", related_name="product_images", on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="store/products/")
+
 class Product(models.Model):
-    title = models.SlugField(unique=True, max_length=255)
+    slug = models.SlugField(unique=True, max_length=255)
+    title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     
     collection = models.ForeignKey("store.Collection", on_delete=models.SET_NULL, related_name="products", null=True, blank=True)
