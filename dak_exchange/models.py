@@ -21,8 +21,13 @@ class ExchangeOrder(models.Model):
     def __str__(self):
         return f"Order #{self.id} ({self.status})"
 
+class ExchangeProductImage(models.Model):
+    product = models.ForeignKey("dak_exchange.ExchangeProduct", related_name="product_images", on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="dak_exchange/products/")
+
 class ExchangeProduct(models.Model):
-    title = models.SlugField(unique=True, max_length=255)
+    slug = models.SlugField(unique=True, max_length=255)
+    title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     details = models.JSONField(blank=True, null=True)
     
