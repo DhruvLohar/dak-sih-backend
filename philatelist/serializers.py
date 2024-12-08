@@ -13,4 +13,4 @@ class PhilatelistSerializer(serializers.ModelSerializer):
 class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Philatelist
-        fields = ['name', 'email']
+        fields = ['name', 'email', 'phone_number', 'postal_code']
