@@ -98,6 +98,7 @@ class AuthMixin:
     
     @action(detail=False, methods=['POST'], permission_classes=[])
     def signUpSignIn(self, request):
+        print("aaya")
         email = request.data.get("email")
         
         try:
@@ -107,50 +108,24 @@ class AuthMixin:
                 "id": user.id,
                 "verified": user.is_active,
             }, status=status.HTTP_200_OK)
+            
         except Philatelist.DoesNotExist:
-            try:
-                with transaction.atomic():
-                    serializer = CreateUserSerializer(data=request.data)
-                    
-                    if serializer.is_valid(raise_exception=False):
-                        serializer.save()
-                        
-                        user = Philatelist.objects.get(email=serializer.data.get("email"))
-                        user.is_active = False
-                        user.save()
-                    
-                        return Response(data={
-                            "id": user.id,
-                            "verified": False,
-                        }, status=status.HTTP_200_OK)
-                    
-                    if serializer.errors.get("email"):
-                        return Response(
-                            data={"detail": "User with the same 'email' already exists"},
-                            status=status.HTTP_400_BAD_REQUEST
-                        )    
-                    
-                    return Response(
-                        {"detail": str(serializer.error_messages)},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-                    
-            except IntegrityError:
-                return Response(
-                    data={"detail": "User with the same 'email' already exists"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )  
-            except UnicodeDecodeError as e:
-                return Response(
-                    data={"detail": str(e)},
-                    status=status.HTTP_400_BAD_REQUEST
-                )  
-            except Exception as e:
-                return Response(
-                    data={"detail": str(e)},
-                    status=status.HTTP_400_BAD_REQUEST
-                )  
-                
+            serializer = CreateUserSerializer(data=request.data)
+            
+            if serializer.is_valid():
+                user = serializer.save()
+                user.is_active = False
+                user.save()
+            
+                return Response(data={
+                    "id": user.id,
+                    "verified": False,
+                }, status=status.HTTP_200_OK)
+            
+            return Response(
+                data={"detail": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
             
 class PhilatelistAPIView(
     AuthMixin,
