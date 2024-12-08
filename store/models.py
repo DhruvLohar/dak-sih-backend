@@ -4,6 +4,8 @@ class Collection(models.Model):
     slug = models.SlugField(unique=True, max_length=255)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+
+    image = models.ImageField(upload_to="store/collections/", blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

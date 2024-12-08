@@ -1,3 +1,6 @@
+import os
+import uuid
+
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,6 +13,8 @@ from .serializers import *
 
 from dak_sih.responses import *
 from dak_sih.permissions import CookieAuthentication
+
+from .tasks import *
 
 class UserServicesMixin:
     
@@ -58,3 +63,28 @@ class BlogViewSet(ModelViewSet, EnhancedResponseMixin):
     permission_classes = [IsAuthenticated]
     authentication_classes = [CookieAuthentication]
 
+
+class MLServiceMixin:
+    @action(detail=False, methods=['POST'])
+    def stampVision(self, request):
+        image_file = request.data.get("image")
+        if not image_file:
+            return Response(
+                {"error": "No image provided"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Create images directory if it doesn't exist
+        os.makedirs("./images", exist_ok=True)
+        
+        # Generate unique filename
+        filename = f"stamp_{str(uuid.uuid4())}.png"
+        image_path = os.path.join("./images", filename)
+        
+        # Save uploaded image
+        with open(image_path, "wb+") as f:
+            for chunk in image_file.chunks():
+                f.write(chunk)
+        
+        response = stamp_vision_response.delay(image_path)
+        return Response(data=response.get(), status=status.HTTP_200_OK)

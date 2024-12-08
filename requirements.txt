@@ -10,3 +10,12 @@ django-redis
 python-dotenv
 drf-spectacular
 django-tinymce
+
+pandas
+numpy
+holidays
+scikit-learn
+scipy
+seaborn
+google-generativeai
+nltk

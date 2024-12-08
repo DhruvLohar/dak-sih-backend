@@ -71,14 +71,13 @@ class CollectionViewSet(
     authentication_classes = [CookieAuthentication]
     
     def list(self, request):
-        products = Product.objects.filter(is_active=True)  # Only fetch active products
-        serializer = ProductSerializer(products, many=True)
+        collections = Collection.objects.all()  # Only fetch active products
+        serializer = CollectionSerializer(collections, many=True)
         
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # TODO: Add retrieve method to get a single collection by slug
     def retrieve(self, request, pk=None):
-        print(pk)
         try:
             collection = Collection.objects.get(slug=pk)
         except Collection.DoesNotExist:

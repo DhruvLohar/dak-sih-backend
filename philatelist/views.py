@@ -19,7 +19,7 @@ from philatelist.serializers import *
 
 from dashboard.serializers import PDAUserSerializer
 
-from services.views import UserServicesMixin
+from services.views import UserServicesMixin, MLServiceMixin
 
 class AuthMixin:
     
@@ -130,6 +130,7 @@ class PhilatelistAPIView(
     AuthMixin,
     UserServicesMixin,
     viewsets.ModelViewSet,
+    MLServiceMixin,
     EnhancedResponseMixin
 ):
     queryset = Philatelist.objects.all()
