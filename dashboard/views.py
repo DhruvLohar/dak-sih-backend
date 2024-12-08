@@ -19,7 +19,7 @@ from store.serializers import *
 from services.models import *
 from services.serializers import *
 
-from dak_sih.permissions import CookieAuthentication
+from dak_sih.permissions import AdminCookieAuthentication
 from dak_sih.responses import EnhancedResponseMixin
 
 class IsAdminUser(BasePermission):
@@ -30,7 +30,7 @@ class AdminUserViewSet(EnhancedResponseMixin, viewsets.ViewSet):
     queryset = AdminUser.objects.all()
     serializer_class = AdminUserSerializer
     permission_classes = [IsAdminUser]
-    authentication_classes = [CookieAuthentication]
+    authentication_classes = [AdminCookieAuthentication]
     
     @staticmethod
     def send_otp_on_email(subject, template_name, email_to, context=None):
@@ -93,19 +93,22 @@ class AdminUserViewSet(EnhancedResponseMixin, viewsets.ViewSet):
             if email_sent:
                 user.valid_otp = generated_otp
                 user.save()
-                return Response(
-                    data="Email was sent on the specified email",
-                    status=status.HTTP_200_OK
-                )
-            
-            return Response(data={
-                "id": user.id,
-            }, status=status.HTTP_200_OK)
+                return Response(data={
+                    "id": user.id,
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response(data="Email was not sent", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except AdminUser.DoesNotExist:
             return Response(
                 data={"detail": "Invalid credentials"},
                 status=status.HTTP_400_BAD_REQUEST
             )  
+    
+    @action(detail=False, methods=['GET'])
+    def getProfile(self, request):
+        user = request.user
+        serializer = AdminUserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['POST'])
     def addProduct(self, request):

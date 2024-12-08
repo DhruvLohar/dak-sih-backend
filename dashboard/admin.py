@@ -8,7 +8,7 @@ class PostalOfficeAdmin(admin.ModelAdmin):
 
 @admin.register(AdminUser)
 class AdminUserAdmin(admin.ModelAdmin):
-    list_display = ['name', 'postal_office']
+    list_display = ['name', 'postal_office', 'is_super_admin']
 
 @admin.register(PDA)
 class PDAApplicationAdmin(admin.ModelAdmin):

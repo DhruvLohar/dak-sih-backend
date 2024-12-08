@@ -2,10 +2,27 @@ from django.db import models
 from philatelist.models import Philatelist
 
 class PostalOffice(models.Model):
-    alias = models.TextField(max_length=255)
-    main_office = models.TextField(max_length=100)
-    sub_division = models.TextField(max_length=100)
-    postal_code = models.TextField(max_length=10)
+    
+    MAIN_OFFICE_CHOICES = [
+        ('Delhi', 'Delhi'),
+        ('Mumbai', 'Mumbai'),
+        ('Kolkata', 'Kolkata'),
+        ('Chennai', 'Chennai'),
+    ]
+    
+    SUB_DIVISION_CHOICES = [
+        ('Borivali', 'Borivali'),
+        ('Andheri', 'Andheri'),
+        ('Ghatkopar', 'Ghatkopar'),
+        ('Kurla', 'Kurla'),
+        
+        ('NCR', 'NCR'),
+    ]
+    
+    alias = models.CharField(max_length=255)
+    main_office = models.CharField(max_length=100, choices=MAIN_OFFICE_CHOICES)
+    sub_division = models.CharField(max_length=100, null=True, blank=True, choices=SUB_DIVISION_CHOICES)
+    postal_code = models.CharField(max_length=10)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -16,6 +33,8 @@ class PostalOffice(models.Model):
 
 class AdminUser(Philatelist):
     postal_office = models.ForeignKey(PostalOffice, on_delete=models.CASCADE)
+    
+    is_super_admin = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.name} ({self.postal_office})"
