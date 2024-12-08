@@ -39,8 +39,7 @@ class ForumPostSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def create(self, validated_data):
-        # Extract the nested data for images
-        uploaded_images = validated_data.pop('uploaded_images', [])
+        uploaded_images = self.context.get('images', [])
         
         # Ensure the authenticated user is linked to the post
         user = self.context['user']

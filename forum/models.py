@@ -5,7 +5,7 @@ class ForumPostImage(models.Model):
     image = models.ImageField(upload_to="forum/")
 
     def __str__(self) -> str:
-        return self.post.title
+        return self.post.id
 
 class ForumPost(models.Model):
     user = models.ForeignKey(

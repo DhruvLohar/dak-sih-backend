@@ -98,7 +98,6 @@ class AuthMixin:
     
     @action(detail=False, methods=['POST'], permission_classes=[])
     def signUpSignIn(self, request):
-        print("aaya")
         email = request.data.get("email")
         
         try:
