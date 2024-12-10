@@ -25,10 +25,12 @@ class ProductViewSet(
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
-        product = self.get_object()
-        serializer = ProductSerializer(product)
-        
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            product = Product.objects.get(slug=pk)
+            serializer = ProductSerializer(product)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            return Response(data="Product", status=status.HTTP_404_NOT_FOUND)
 
     @action(detail=True, methods=["post"])
     def addReview(self, request, pk=None):
@@ -104,10 +106,8 @@ class OrderViewSet(
 
     @action(detail=False, methods=["post"])
     def placeOrder(self, request):
-        data = request.data.copy()
-        data["user"] = request.data.id
+        serializer = OrderSerializer(data=request.data, context={"user": request.user})
 
-        serializer = OrderSerializer(data=data)
         if serializer.is_valid():
             order = serializer.save()  # Save the order and handle line items in the serializer
             return Response(serializer.data, status=status.HTTP_201_CREATED)

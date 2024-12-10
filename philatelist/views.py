@@ -109,6 +109,12 @@ class AuthMixin:
             }, status=status.HTTP_200_OK)
             
         except Philatelist.DoesNotExist:
+            name = request.data.get("name")
+            phone_number = request.data.get("phone_number")
+            
+            if not name or not phone_number:
+                return Response(data={"detail": "Name and phone number are required"}, status=status.HTTP_400_BAD_REQUEST)
+            
             serializer = CreateUserSerializer(data=request.data)
             
             if serializer.is_valid():
@@ -141,6 +147,7 @@ class PhilatelistAPIView(
     def perform_destroy(self, instance):
         instance.is_active = False
         instance.save()
+        
         
     @action(detail=False, methods=['GET'])
     def getProfile(self, request):

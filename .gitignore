@@ -4,6 +4,9 @@ env
 media
 ./media
 
+media_bp
+./media_bp
+
 .env
 /.env
 ./.env

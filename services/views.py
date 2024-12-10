@@ -62,6 +62,14 @@ class BlogViewSet(ModelViewSet, EnhancedResponseMixin):
     serializer_class = BlogSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [CookieAuthentication]
+    
+    def retrieve(self, request, pk=None):
+        try:
+            blog = Blog.objects.get(slug=pk)
+            serializer = BlogSerializer(blog)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        except Blog.DoesNotExist:
+            return Response(data="Blog", status=status.HTTP_404_NOT_FOUND)
 
 
 class MLServiceMixin:

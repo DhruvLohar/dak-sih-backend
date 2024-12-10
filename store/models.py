@@ -66,6 +66,11 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='processing')
     
     transaction_details = models.JSONField(default=dict)
+    SHIPPING_CHOICES = [
+        ('regular', 'Regular'),
+        ('express', 'Express'),
+    ]
+    shipping_method = models.CharField(max_length=10, choices=SHIPPING_CHOICES, default='regular')
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
