@@ -2,9 +2,10 @@ from django.contrib import admin
 from .models import *
 
 # TODO: Register models for PostalOffice and AdminUser
-@admin.register(PostalOffice)
-class PostalOfficeAdmin(admin.ModelAdmin):
-    list_display = ['alias', 'main_office', 'sub_division', 'postal_code']
+@admin.register(PostalOfficeReference)
+class PostalOfficeReferenceAdmin(admin.ModelAdmin):
+    # list_display = ['alias', 'main_office', 'sub_division', 'postal_code']
+    list_display = ['name', 'parent_office', 'is_main_office']
 
 @admin.register(AdminUser)
 class AdminUserAdmin(admin.ModelAdmin):

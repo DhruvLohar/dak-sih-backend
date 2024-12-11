@@ -1,38 +1,23 @@
 from django.db import models
 from philatelist.models import Philatelist
+from .data import ALL_SUB_DIVISIONS
 
-class PostalOffice(models.Model):
-    
-    MAIN_OFFICE_CHOICES = [
-        ('Delhi', 'Delhi'),
-        ('Mumbai', 'Mumbai'),
-        ('Kolkata', 'Kolkata'),
-        ('Chennai', 'Chennai'),
-    ]
-    
-    SUB_DIVISION_CHOICES = [
-        ('Borivali', 'Borivali'),
-        ('Andheri', 'Andheri'),
-        ('Ghatkopar', 'Ghatkopar'),
-        ('Kurla', 'Kurla'),
-        
-        ('NCR', 'NCR'),
-    ]
-    
-    alias = models.CharField(max_length=255)
-    main_office = models.CharField(max_length=100, choices=MAIN_OFFICE_CHOICES)
-    sub_division = models.CharField(max_length=100, null=True, blank=True, choices=SUB_DIVISION_CHOICES)
-    postal_code = models.CharField(max_length=10)
-    
+class PostalOfficeReference(models.Model):
+    name = models.CharField(max_length=255, choices=ALL_SUB_DIVISIONS, null=True, blank=True)
+    parent_office = models.ForeignKey(
+        'self', null=True, blank=True, on_delete=models.CASCADE, related_name='sub_offices'
+    ) 
+    is_main_office = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.alias} ({self.main_office})"
+        return self.name
 
 
 class AdminUser(Philatelist):
-    postal_office = models.ForeignKey(PostalOffice, on_delete=models.CASCADE)
+    postal_office = models.ForeignKey("dashboard.PostalOfficeReference", on_delete=models.CASCADE)
     
     is_super_admin = models.BooleanField(default=False)
 

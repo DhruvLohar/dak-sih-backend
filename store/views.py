@@ -19,9 +19,27 @@ class ProductViewSet(
     authentication_classes = [CookieAuthentication]
     
     def list(self, request):
-        products = Product.objects.filter(is_active=True)  # Only fetch active products
-        serializer = ProductSerializer(products, many=True)
+        queryset = Product.objects.filter(is_active=True)  # Only fetch active products
         
+        # Apply filters from query parameters
+        title = request.query_params.get('title', None)
+        if title:
+            print(title)
+            queryset = queryset.filter(title__icontains=title)
+                        
+        min_price = request.query_params.get('min_price', None) 
+        if min_price:
+            queryset = queryset.filter(price__gte=min_price)
+            
+        max_price = request.query_params.get('max_price', None)
+        if max_price:
+            queryset = queryset.filter(price__lte=max_price)
+            
+        collections = request.query_params.getlist('collection')
+        if collections:
+            queryset = queryset.filter(collection__slug__in=collections)
+            
+        serializer = ProductSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):

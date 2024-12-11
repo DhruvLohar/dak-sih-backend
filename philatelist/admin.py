@@ -17,7 +17,7 @@ class PhilatelistAdmin(admin.ModelAdmin):
             'fields': ('address', 'postal_code',)
         }),
         ('Important Dates', {'fields': ('last_login', 'created_at', 'modified_at',)}),
-        ('User Tokens', {'fields': ('access_token',)}),
+        ('User Tokens', {'fields': ('access_token', 'fcm_token',)}),
     )
     
     def copy_access_token(self, obj):

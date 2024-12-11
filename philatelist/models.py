@@ -4,6 +4,9 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractBaseUser
 from django.db import transaction
 
+from services.models import Notification
+from firebase_admin import messaging, _messaging_utils
+
 from rest_framework_simplejwt.tokens import AccessToken, TokenError
 
 GENDER = [
@@ -45,7 +48,7 @@ class Philatelist(AbstractBaseUser, models.Model):
     
     access_token = models.TextField(null=True, blank=True)
     valid_otp = models.PositiveIntegerField(null=True, blank=True)
-    # fcm_token = models.TextField(null=True, blank=True)
+    fcm_token = models.TextField(null=True, blank=True)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'phone_number']
@@ -67,3 +70,36 @@ class Philatelist(AbstractBaseUser, models.Model):
 
         new_token = AccessToken.for_user(self)
         return str(new_token), True
+    
+    def sendNotification(self, title, body):
+        
+        # Create the notification in our database
+        notification = Notification.objects.create(
+            user=self.pk,
+            title=title,
+            body=body
+        )
+        notification.save()
+        
+        if not notification:
+            print("Failed to create notification in the database.")
+            return None
+        
+        if self.fcm_token:
+            try:
+                message = messaging.Message(
+                    notification=messaging.Notification(
+                        title=title,
+                        body=body
+                    ),
+                    token=self.fcm_token
+                )
+                # Attempt to send the message
+                response = messaging.send(message)
+                
+            except _messaging_utils.UnregisteredError:
+                print(f"Token {self.fcm_token} is unregistered. Removing from database.")
+            except Exception as e:
+                print(f"Error sending notification: {e}")
+                
+        return notification

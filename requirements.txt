@@ -19,3 +19,5 @@ scipy
 seaborn
 google-generativeai
 nltk
+
+firebase_admin
